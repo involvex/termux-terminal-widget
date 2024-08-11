@@ -21,8 +21,6 @@ import androidx.appcompat.widget.AppCompatButton;
 
 import com.gardockt.termuxterminalwidget.R;
 
-import org.jetbrains.annotations.NotNull;
-
 public class ColorButton extends AppCompatButton {
 
     private static final String XMLNS_ANDROID = "http://schemas.android.com/apk/res/android";
@@ -88,7 +86,7 @@ public class ColorButton extends AppCompatButton {
         return fillPaint.getColor();
     }
 
-    private int getColorFromAttributeValue(@NonNull Context context, @NotNull String value) {
+    private int getColorFromAttributeValue(@NonNull Context context, @NonNull String value) {
         if (value.charAt(0) == '#') {
             return Color.parseColor(value);
         } else if (value.charAt(0) == '@') {
