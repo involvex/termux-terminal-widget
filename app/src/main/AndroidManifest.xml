@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="com.termux.permission.RUN_COMMAND" />
 
@@ -57,7 +58,10 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".shell.CommandRunnerService" />
+        <service android:name=".shell.CommandRunnerService" android:foregroundServiceType="specialUse">
+            <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Allows widgets to start Termux intents in order to run commands." />
+        </service>
         <service android:name=".shell.PluginResultsService" />
     </application>
 
