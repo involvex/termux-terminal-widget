@@ -18,10 +18,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.work.Data;
-import androidx.work.PeriodicWorkRequest;
-import androidx.work.WorkManager;
-import androidx.work.WorkRequest;
 
 import com.gardockt.termuxterminalwidget.ColorScheme;
 import com.gardockt.termuxterminalwidget.GlobalPreferences;
@@ -31,12 +27,12 @@ import com.gardockt.termuxterminalwidget.util.RequestCodeManager;
 import com.gardockt.termuxterminalwidget.util.TriConsumer;
 import com.gardockt.termuxterminalwidget.shell.CommandRunner;
 import com.gardockt.termuxterminalwidget.shell.CommandRunnerService;
+import com.gardockt.termuxterminalwidget.widgetrefresher.WidgetRefresher;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 
 import io.reactivex.rxjava3.core.Observable;
@@ -49,6 +45,7 @@ import io.reactivex.rxjava3.disposables.Disposable;
 public class MainWidget extends AppWidgetProvider {
 
     private static final String TAG = MainWidget.class.getSimpleName();
+    private static final long REFRESH_INTERVAL_SECS = 15 * 60;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private static final MainWidgetUpdateQueue widgetUpdateQueue = new MainWidgetUpdateQueue();
@@ -60,9 +57,12 @@ public class MainWidget extends AppWidgetProvider {
             Log.d(TAG, "Service connected");
             CommandRunnerService.CommandRunnerServiceBinder binder = (CommandRunnerService.CommandRunnerServiceBinder) service;
             CommandRunnerService commandRunnerService = binder.getService();
+
             MainWidgetUpdater widgetUpdater = new MainWidgetUpdater(commandRunnerService, onCommandFinished);
             widgetUpdateQueue.setWidgetUpdater(widgetUpdater);
             widgetUpdateQueue.retryAll();
+
+            setupWidgetRefresher(commandRunnerService);
         }
 
         @Override
@@ -147,10 +147,23 @@ public class MainWidget extends AppWidgetProvider {
                         Log.v(TAG, "CommandRunnerService start event received");
                         bindCommandRunnerService(context);
                     });
+        } else {
+            setupWidgetRefresher(context);
         }
 
         // To display the output just after boot.
         updateAll(context);
+    }
+
+    private static void setupWidgetRefresher(@NonNull Context context) {
+        WidgetRefresher widgetRefresher = MainWidgetRefresher.getInstance(context);
+        if (!widgetRefresher.isPersistent()) {
+            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+            int[] widgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(context, MainWidget.class));
+            for (int widgetId : widgetIds) {
+                widgetRefresher.add(widgetId, REFRESH_INTERVAL_SECS);
+            }
+        }
     }
 
     private static void setColorScheme(@NonNull RemoteViews views, @NonNull ColorScheme colorScheme) {
@@ -319,28 +332,14 @@ public class MainWidget extends AppWidgetProvider {
     // cancels update work if one exists, and enqueues a new one; use this method instead of just
     // adding to ensure that only one such job exists
     private static void resetUpdateWork(@NonNull Context context, int widgetId) {
-        WorkManager workManager = WorkManager.getInstance(context);
-        long updateIntervalMinutes = 15;
-
         cancelUpdateWork(context, widgetId);
-        Data workData = new Data.Builder()
-                .putInt(MainWidget.EXTRA_WIDGET_ID, widgetId)
-                .build();
-        WorkRequest workRequest = new PeriodicWorkRequest.Builder(MainWidgetUpdateWorker.class, updateIntervalMinutes, TimeUnit.MINUTES)
-                .setInputData(workData)
-                .addTag(MainWidget.getUpdateJobTag(widgetId))
-                .build();
-        workManager.enqueue(workRequest);
+
+        WidgetRefresher refresher = MainWidgetRefresher.getInstance(context);
+        refresher.add(widgetId, REFRESH_INTERVAL_SECS);
     }
 
     private static void cancelUpdateWork(@NonNull Context context, int widgetId) {
-        WorkManager workManager = WorkManager.getInstance(context);
-        workManager.cancelAllWorkByTag(MainWidget.getUpdateJobTag(widgetId));
+        WidgetRefresher refresher = MainWidgetRefresher.getInstance(context);
+        refresher.remove(widgetId);
     }
-
-    @NonNull
-    public static String getUpdateJobTag(int widgetId) {
-        return Integer.toString(widgetId);
-    }
-
 }
