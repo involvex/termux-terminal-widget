@@ -17,6 +17,7 @@
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:name=".MainApplication"
         android:supportsRtl="true"
         android:theme="@style/Theme.TermuxTerminalWidget"
         tools:targetApi="31">
@@ -34,14 +35,6 @@
 
         <receiver
             android:name=".shell.CommandRunnerServiceBootReceiver"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
-        </receiver>
-
-        <receiver
-            android:name=".mainwidget.MainWidgetRefreshBootReceiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

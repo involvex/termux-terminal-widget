@@ -127,6 +127,14 @@ public class MainWidget extends AppWidgetProvider {
         }
     }
 
+    public static void updateAll(@NonNull Context context) {
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+        int[] widgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(context, MainWidget.class));
+        for (int widgetId : widgetIds) {
+            updateWidget(context, appWidgetManager, widgetId, true);
+        }
+    }
+
     private static void setColorScheme(@NonNull RemoteViews views, @NonNull ColorScheme colorScheme) {
         Log.d(TAG, String.format(
                 "Setting color scheme: FG #%08X, BG #%08X",
