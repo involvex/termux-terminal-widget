@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
+import java.util.Objects;
+
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.subjects.BehaviorSubject;
 
@@ -13,6 +15,9 @@ public class GlobalPreferencesUtils {
     private static final String KEY_DEFAULT_COLOR_FOREGROUND = "default_color_foreground";
     private static final String KEY_DEFAULT_COLOR_BACKGROUND = "default_color_background";
     private static final String KEY_DEFAULT_TEXT_SIZE_SP = "default_text_size_sp";
+    private static final String KEY_WIDGET_REFRESH_BACKEND = "widget_refresh_backend";
+
+    private static final String VALUE_WIDGET_REFRESH_BACKEND_ALARM_MANAGER = "ALARM_MANAGER";
 
     private static final BehaviorSubject<GlobalPreferences> preferencesSubject = BehaviorSubject.create();
 
@@ -62,6 +67,14 @@ public class GlobalPreferencesUtils {
             preferences.setTextSizeSp(textSizeSp);
         }
 
+        // widget refresh backend
+        preferences.setAlarmManagerBackendEnabled(
+                Objects.equals(
+                        sharedPreferences.getString(KEY_WIDGET_REFRESH_BACKEND, null),
+                        VALUE_WIDGET_REFRESH_BACKEND_ALARM_MANAGER
+                )
+        );
+
         preferencesSubject.onNext(preferences);
         return preferences;
     }
@@ -69,11 +82,18 @@ public class GlobalPreferencesUtils {
     public static void save(@NonNull Context context, @NonNull GlobalPreferences preferences) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 
-        sharedPreferences.edit()
+        SharedPreferences.Editor editor = sharedPreferences.edit()
                 .putInt(KEY_DEFAULT_COLOR_FOREGROUND, preferences.getColorScheme().getColorForeground())
                 .putInt(KEY_DEFAULT_COLOR_BACKGROUND, preferences.getColorScheme().getColorBackground())
-                .putInt(KEY_DEFAULT_TEXT_SIZE_SP, preferences.getTextSizeSp())
-                .apply();
+                .putInt(KEY_DEFAULT_TEXT_SIZE_SP, preferences.getTextSizeSp());
+
+        if (preferences.isAlarmManagerBackendEnabled()) {
+            editor.putString(KEY_WIDGET_REFRESH_BACKEND, VALUE_WIDGET_REFRESH_BACKEND_ALARM_MANAGER);
+        } else {
+            editor.remove(KEY_WIDGET_REFRESH_BACKEND);
+        }
+
+        editor.apply();
 
         preferencesSubject.onNext(preferences);
     }

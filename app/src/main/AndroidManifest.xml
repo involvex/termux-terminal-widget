@@ -5,6 +5,10 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- Needed for scheduling exact alarms with AlarmManager.OnAlarmListener callback (which is
+    used in AlarmManagerWidgetRefresher) on Android 12-13. On Android 14+ it is no longer
+    required. -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" android:maxSdkVersion="33" />
     <uses-permission android:name="com.termux.permission.RUN_COMMAND" />
 
     <queries>

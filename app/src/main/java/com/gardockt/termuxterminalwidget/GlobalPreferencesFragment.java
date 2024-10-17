@@ -1,11 +1,13 @@
 package com.gardockt.termuxterminalwidget;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -24,6 +26,8 @@ public class GlobalPreferencesFragment extends Fragment implements ColorPickerDi
     private ColorButton colorForegroundButton;
     private ColorButton colorBackgroundButton;
     private EditText textSizeField;
+    @SuppressLint("UseSwitchCompatOrMaterialCode")  // using SwitchCompat makes no difference on Android 5.0+
+    private Switch alarmManagerSwitch;
     private Button saveButton;
 
     private GlobalPreferences preferences;
@@ -49,8 +53,24 @@ public class GlobalPreferencesFragment extends Fragment implements ColorPickerDi
             newPreferences.setTextSizeSp(textSizeSp);
         } catch (NumberFormatException ignored) {}
 
+        // widget refresh backend
+        newPreferences.setAlarmManagerBackendEnabled(alarmManagerSwitch.isChecked());
+
         GlobalPreferencesUtils.save(context, newPreferences);
         Toast.makeText(context, R.string.settings_saved, Toast.LENGTH_SHORT).show();
+    }
+
+    private void load() {
+        // color scheme
+        prepareColors();
+
+        // text size
+        textSizeField.setText(
+                String.format(Locale.getDefault(), "%d", preferences.getTextSizeSp())
+        );
+
+        // widget refresh backend
+        alarmManagerSwitch.setChecked(preferences.isAlarmManagerBackendEnabled());
     }
 
     @Override
@@ -62,6 +82,7 @@ public class GlobalPreferencesFragment extends Fragment implements ColorPickerDi
         colorForegroundButton = view.findViewById(R.id.color_foreground_button);
         colorBackgroundButton = view.findViewById(R.id.color_background_button);
         textSizeField = view.findViewById(R.id.field_text_size);
+        alarmManagerSwitch = view.findViewById(R.id.alarmmanager_switch);
         saveButton = view.findViewById(R.id.save_button);
 
         colorForegroundButton.setOnClickListener(
@@ -78,13 +99,9 @@ public class GlobalPreferencesFragment extends Fragment implements ColorPickerDi
                 )
         );
 
-        textSizeField.setText(
-                String.format(Locale.getDefault(), "%d", preferences.getTextSizeSp())
-        );
-
         saveButton.setOnClickListener((v) -> save());
 
-        prepareColors();
+        load();
     }
 
     @Override
@@ -94,6 +111,7 @@ public class GlobalPreferencesFragment extends Fragment implements ColorPickerDi
         colorForegroundButton = null;
         colorBackgroundButton = null;
         textSizeField = null;
+        alarmManagerSwitch = null;
         saveButton = null;
     }
 

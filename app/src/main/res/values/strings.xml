@@ -10,6 +10,8 @@
     <string name="text_size">Text size</string>
     <string name="default_text_size">Default text size</string>
     <string name="refresh_interval">Refresh interval</string>
+    <string name="widget_refresh_backend">Widget refresh backend</string>
+    <string name="use_alarmmanager">Use AlarmManager (experimental, allows for intervals smaller than 15 minutes)</string>
     <string name="foreground">Foreground</string>
     <string name="background">Background</string>
     <string name="seconds_short">s</string>
@@ -19,6 +21,7 @@
     <string name="fmt_seconds">%d seconds</string>
 
     <string name="error_invalid_refresh_interval">Invalid refresh interval</string>
+    <string name="error_invalid_refresh_interval_work">Invalid refresh interval (switch to AlarmManager backend to allow smaller intervals)</string>
 
     <string name="command_runner_service_notification">Service notification</string>
     <string name="service_is_running">Service is running</string>

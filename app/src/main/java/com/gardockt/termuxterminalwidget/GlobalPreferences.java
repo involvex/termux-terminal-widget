@@ -8,6 +8,7 @@ public class GlobalPreferences implements Cloneable {
 
     private ColorScheme colorScheme = new ColorScheme(0xFFFFFFFF, 0xBF000000);
     private int textSizeSp = 14;
+    private boolean alarmManagerBackendEnabled = false;
 
     public ColorScheme getColorScheme() {
         return colorScheme;
@@ -23,6 +24,14 @@ public class GlobalPreferences implements Cloneable {
 
     public void setTextSizeSp(int textSizeSp) {
         this.textSizeSp = textSizeSp;
+    }
+
+    public boolean isAlarmManagerBackendEnabled() {
+        return alarmManagerBackendEnabled;
+    }
+
+    public void setAlarmManagerBackendEnabled(boolean alarmManagerBackendEnabled) {
+        this.alarmManagerBackendEnabled = alarmManagerBackendEnabled;
     }
 
     @NonNull

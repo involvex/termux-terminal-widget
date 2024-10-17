@@ -152,6 +152,12 @@ public class MainWidget extends AppWidgetProvider {
 
         // To display the output just after boot.
         updateAll(context);
+
+        GlobalPreferencesUtils.getObservable(context)
+                .map(GlobalPreferences::isAlarmManagerBackendEnabled)
+                .distinctUntilChanged()
+                .skip(1)
+                .subscribe((enabled) -> MainWidgetRefresher.refreshInstance(context));
     }
 
     private static void setupWidgetRefresher(@NonNull Context context) {

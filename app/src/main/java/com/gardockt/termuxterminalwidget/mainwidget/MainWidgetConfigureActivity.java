@@ -34,11 +34,12 @@ import java.util.Locale;
 public class MainWidgetConfigureActivity extends AppCompatActivity implements ColorPickerDialogListener {
 
     private static final String TAG = MainWidgetConfigureActivity.class.getSimpleName();
-    private static final int REFRESH_INTERVAL_MIN_SECS = 15 * 60;  // minimum interval supported by Work API
+    private static final int WORK_REFRESH_INTERVAL_MIN_SECS = 15 * 60;  // minimum interval supported by Work API
 
     private int widgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
 
     private final MainWidgetPreferences defaultPreferences = new MainWidgetPreferences();
+    private final GlobalPreferences globalPreferences = GlobalPreferencesUtils.get(this);
 
     private EditText commandField;
     private SwitchCompat customColorsSwitch;
@@ -180,8 +181,6 @@ public class MainWidgetConfigureActivity extends AppCompatActivity implements Co
     }
 
     private void fillSettings(@NonNull MainWidgetPreferences widgetPreferences) {
-        GlobalPreferences globalPreferences = GlobalPreferencesUtils.get(this);
-
         // command
         commandField.setText(widgetPreferences.getCommand());
 
@@ -239,20 +238,28 @@ public class MainWidgetConfigureActivity extends AppCompatActivity implements Co
         boolean errorsFound = false;
 
         {
+            String errorInvalidRefreshInterval = getString(R.string.error_invalid_refresh_interval);
+            String errorInvalidRefreshIntervalWork = getString(R.string.error_invalid_refresh_interval_work);
+
             boolean errorFound = false;
+
             try {
                 String refreshIntervalSecsStr = refreshIntervalSecsField.getText().toString();
                 int refreshIntervalSecs = parseIntOrDefault(refreshIntervalSecsStr, defaultPreferences.getRefreshIntervalSecs());
-                if (refreshIntervalSecs < REFRESH_INTERVAL_MIN_SECS) {
+                if (refreshIntervalSecs <= 0) {
+                    refreshIntervalSecsField.setError(errorInvalidRefreshInterval);
+                    errorFound = true;
+                } else if (!globalPreferences.isAlarmManagerBackendEnabled() && refreshIntervalSecs < WORK_REFRESH_INTERVAL_MIN_SECS) {
+                    refreshIntervalSecsField.setError(errorInvalidRefreshIntervalWork);
                     errorFound = true;
                 }
             } catch (NumberFormatException ex) {
+                refreshIntervalSecsField.setError(errorInvalidRefreshInterval);
                 errorFound = true;
             }
 
             if (errorFound) {
                 errorsFound = true;
-                refreshIntervalSecsField.setError(getString(R.string.error_invalid_refresh_interval));
             } else {
                 refreshIntervalSecsField.setError(null);
             }
