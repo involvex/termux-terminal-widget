@@ -9,8 +9,16 @@
     <string name="custom_colors">Custom colors</string>
     <string name="text_size">Text size</string>
     <string name="default_text_size">Default text size</string>
+    <string name="refresh_interval">Refresh interval</string>
     <string name="foreground">Foreground</string>
     <string name="background">Background</string>
+    <string name="seconds_short">s</string>
+
+    <string name="fmt_hours">%d hours</string>
+    <string name="fmt_minutes">%d minutes</string>
+    <string name="fmt_seconds">%d seconds</string>
+
+    <string name="error_invalid_refresh_interval">Invalid refresh interval</string>
 
     <string name="command_runner_service_notification">Service notification</string>
     <string name="service_is_running">Service is running</string>

@@ -10,6 +10,7 @@ public class MainWidgetPreferences {
     private String command = "";
     private ColorScheme colorScheme = null;
     private Integer textSizeSp = null;
+    private int refreshIntervalSecs = 15 * 60;
 
     public void setCommand(@NonNull String command) {
         this.command = command;
@@ -34,5 +35,13 @@ public class MainWidgetPreferences {
 
     public void setTextSizeSp(Integer textSizeSp) {
         this.textSizeSp = textSizeSp;
+    }
+
+    public int getRefreshIntervalSecs() {
+        return refreshIntervalSecs;
+    }
+
+    public void setRefreshIntervalSecs(int refreshIntervalSecs) {
+        this.refreshIntervalSecs = refreshIntervalSecs;
     }
 }

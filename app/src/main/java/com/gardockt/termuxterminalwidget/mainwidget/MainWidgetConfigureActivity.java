@@ -4,12 +4,17 @@ import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 
@@ -17,17 +22,23 @@ import com.gardockt.termuxterminalwidget.ColorPickerDialogInvoker;
 import com.gardockt.termuxterminalwidget.ColorScheme;
 import com.gardockt.termuxterminalwidget.GlobalPreferences;
 import com.gardockt.termuxterminalwidget.GlobalPreferencesUtils;
+import com.gardockt.termuxterminalwidget.R;
 import com.gardockt.termuxterminalwidget.components.ColorButton;
 import com.gardockt.termuxterminalwidget.databinding.MainWidgetConfigureBinding;
 import com.jaredrummler.android.colorpicker.ColorPickerDialogListener;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 public class MainWidgetConfigureActivity extends AppCompatActivity implements ColorPickerDialogListener {
 
     private static final String TAG = MainWidgetConfigureActivity.class.getSimpleName();
+    private static final int REFRESH_INTERVAL_MIN_SECS = 15 * 60;  // minimum interval supported by Work API
 
     private int widgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
+
+    private final MainWidgetPreferences defaultPreferences = new MainWidgetPreferences();
 
     private EditText commandField;
     private SwitchCompat customColorsSwitch;
@@ -35,6 +46,9 @@ public class MainWidgetConfigureActivity extends AppCompatActivity implements Co
     private ColorButton colorForegroundButton;
     private ColorButton colorBackgroundButton;
     private EditText textSizeField;
+    private EditText refreshIntervalSecsField;
+    private TextView refreshIntervalHumanReadableText;
+    private Button confirmButton;
 
     private final View.OnClickListener onConfirmButtonClickListener = new View.OnClickListener() {
         public void onClick(View v) {
@@ -59,6 +73,14 @@ public class MainWidgetConfigureActivity extends AppCompatActivity implements Co
                 int textSize = Integer.parseInt(textSizeField.getText().toString());
                 if (textSize > 0) {
                     preferences.setTextSizeSp(textSize);
+                }
+            } catch (NumberFormatException ignored) {}
+
+            // refresh interval
+            try {
+                int refreshIntervalSecs = Integer.parseInt(refreshIntervalSecsField.getText().toString());
+                if (refreshIntervalSecs > 0) {
+                    preferences.setRefreshIntervalSecs(refreshIntervalSecs);
                 }
             } catch (NumberFormatException ignored) {}
 
@@ -89,7 +111,6 @@ public class MainWidgetConfigureActivity extends AppCompatActivity implements Co
         setContentView(binding.getRoot());
 
         commandField = binding.commandField;
-        binding.confirmButton.setOnClickListener(onConfirmButtonClickListener);
 
         customColorsLayout = binding.customColorsLayout;
         customColorsSwitch = binding.customColorsSwitch;
@@ -114,6 +135,31 @@ public class MainWidgetConfigureActivity extends AppCompatActivity implements Co
         );
 
         textSizeField = binding.fieldTextSize;
+
+        refreshIntervalSecsField = binding.fieldRefreshIntervalSecs;
+        refreshIntervalHumanReadableText = binding.textRefreshIntervalHumanReadable;
+        refreshIntervalSecsField.setHint(Integer.toString(defaultPreferences.getRefreshIntervalSecs()));
+        refreshIntervalSecsField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                try {
+                    int intervalSecs = parseIntOrDefault(s.toString(), defaultPreferences.getRefreshIntervalSecs());
+                    refreshIntervalHumanReadableText.setText(getHumanReadableTime(intervalSecs));
+                } catch (NumberFormatException ex) {
+                    refreshIntervalHumanReadableText.setText(null);
+                }
+                checkForErrors();
+            }
+        });
+
+        confirmButton = binding.confirmButton;
+        confirmButton.setOnClickListener(onConfirmButtonClickListener);
 
         // Find the widget id from the intent.
         Intent intent = getIntent();
@@ -160,6 +206,71 @@ public class MainWidgetConfigureActivity extends AppCompatActivity implements Co
             textSizeField.setText(String.format(Locale.getDefault(), "%d", textSize));
         }
         textSizeField.setHint(String.format(Locale.getDefault(), "%d", globalTextSize));
+
+        // refresh interval
+        String refreshIntervalSecsStr = String.format(Locale.getDefault(), "%d", widgetPreferences.getRefreshIntervalSecs());
+        refreshIntervalSecsField.setText(refreshIntervalSecsStr);
+    }
+
+    private String getHumanReadableTime(int timeSecs) {
+        if (timeSecs == 0) {
+            return String.format(getString(R.string.fmt_seconds), 0);
+        }
+
+        int seconds = timeSecs % 60;
+        int minutes = (timeSecs / 60) % 60;
+        int hours = timeSecs / 3600;
+
+        List<String> outputParts = new ArrayList<>();
+        if (hours > 0) {
+            outputParts.add(String.format(getString(R.string.fmt_hours), hours));
+        }
+        if (minutes > 0) {
+            outputParts.add(String.format(getString(R.string.fmt_minutes), minutes));
+        }
+        if (seconds > 0) {
+            outputParts.add(String.format(getString(R.string.fmt_seconds), seconds));
+        }
+
+        return String.join(" ", outputParts);
+    }
+
+    private void checkForErrors() {
+        boolean errorsFound = false;
+
+        {
+            boolean errorFound = false;
+            try {
+                String refreshIntervalSecsStr = refreshIntervalSecsField.getText().toString();
+                int refreshIntervalSecs = parseIntOrDefault(refreshIntervalSecsStr, defaultPreferences.getRefreshIntervalSecs());
+                if (refreshIntervalSecs < REFRESH_INTERVAL_MIN_SECS) {
+                    errorFound = true;
+                }
+            } catch (NumberFormatException ex) {
+                errorFound = true;
+            }
+
+            if (errorFound) {
+                errorsFound = true;
+                refreshIntervalSecsField.setError(getString(R.string.error_invalid_refresh_interval));
+            } else {
+                refreshIntervalSecsField.setError(null);
+            }
+        }
+
+        confirmButton.setEnabled(!errorsFound);
+    }
+
+    /**
+     * @return Return value of {@link Integer#parseInt(String)} if str is a non-empty string. If str
+     * is an empty string or null, defaultValue is returned instead.
+     * @throws NumberFormatException str is non-empty string, which cannot be parsed.
+     */
+    private int parseIntOrDefault(@Nullable String str, int defaultValue) {
+        if (str == null || str.isEmpty()) {
+            return defaultValue;
+        }
+        return Integer.parseInt(str);
     }
 
     @Override

@@ -15,6 +15,7 @@ public class MainWidgetPreferencesManager {
     private static final String KEY_COLOR_FOREGROUND = "color_foreground";
     private static final String KEY_COLOR_BACKGROUND = "color_background";
     private static final String KEY_TEXT_SIZE_SP = "text_size_sp";
+    private static final String KEY_REFRESH_INTERVAL_SECS = "refresh_interval_secs";
 
     @NonNull
     public static MainWidgetPreferences load(@NonNull Context context, int widgetId) {
@@ -58,6 +59,13 @@ public class MainWidgetPreferencesManager {
             preferences.setTextSizeSp(textSizeSp);
         }
 
+        // refresh interval
+        String refreshIntervalSecsKey = generateKey(widgetId, KEY_REFRESH_INTERVAL_SECS);
+        if (sharedPreferences.contains(refreshIntervalSecsKey)) {
+            int refreshIntervalSecs = sharedPreferences.getInt(refreshIntervalSecsKey, 0);
+            preferences.setRefreshIntervalSecs(refreshIntervalSecs);
+        }
+
         return preferences;
     }
 
@@ -86,6 +94,10 @@ public class MainWidgetPreferencesManager {
             editor.remove(generateKey(widgetId, KEY_TEXT_SIZE_SP));
         }
 
+        // refresh interval
+        int refreshIntervalSecs = preferences.getRefreshIntervalSecs();
+        editor.putInt(generateKey(widgetId, KEY_REFRESH_INTERVAL_SECS), refreshIntervalSecs);
+
         editor.apply();
     }
 
@@ -96,6 +108,7 @@ public class MainWidgetPreferencesManager {
         editor.remove(generateKey(widgetId, KEY_COLOR_FOREGROUND));
         editor.remove(generateKey(widgetId, KEY_COLOR_BACKGROUND));
         editor.remove(generateKey(widgetId, KEY_TEXT_SIZE_SP));
+        editor.remove(generateKey(widgetId, KEY_REFRESH_INTERVAL_SECS));
 
         editor.apply();
     }

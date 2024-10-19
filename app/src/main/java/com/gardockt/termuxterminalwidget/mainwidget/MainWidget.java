@@ -45,7 +45,6 @@ import io.reactivex.rxjava3.disposables.Disposable;
 public class MainWidget extends AppWidgetProvider {
 
     private static final String TAG = MainWidget.class.getSimpleName();
-    private static final long REFRESH_INTERVAL_SECS = 15 * 60;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private static final MainWidgetUpdateQueue widgetUpdateQueue = new MainWidgetUpdateQueue();
@@ -161,7 +160,8 @@ public class MainWidget extends AppWidgetProvider {
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
             int[] widgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(context, MainWidget.class));
             for (int widgetId : widgetIds) {
-                widgetRefresher.add(widgetId, REFRESH_INTERVAL_SECS);
+                MainWidgetPreferences preferences = MainWidgetPreferencesManager.load(context, widgetId);
+                widgetRefresher.add(widgetId, preferences.getRefreshIntervalSecs());
             }
         }
     }
@@ -334,8 +334,9 @@ public class MainWidget extends AppWidgetProvider {
     private static void resetUpdateWork(@NonNull Context context, int widgetId) {
         cancelUpdateWork(context, widgetId);
 
+        MainWidgetPreferences preferences = MainWidgetPreferencesManager.load(context, widgetId);
         WidgetRefresher refresher = MainWidgetRefresher.getInstance(context);
-        refresher.add(widgetId, REFRESH_INTERVAL_SECS);
+        refresher.add(widgetId, preferences.getRefreshIntervalSecs());
     }
 
     private static void cancelUpdateWork(@NonNull Context context, int widgetId) {
