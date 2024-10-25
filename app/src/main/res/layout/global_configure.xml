@@ -108,6 +108,14 @@
             android:text="@string/use_alarmmanager"
             tools:ignore="UseSwitchCompatOrMaterialXml" />
 
+        <TextView
+            android:id="@+id/exact_alarms_permission_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="@string/permission_SCHEDULE_EXACT_ALARMS_note"
+            android:visibility="gone" />
+
         <Button
             android:id="@+id/save_button"
             android:layout_width="wrap_content"

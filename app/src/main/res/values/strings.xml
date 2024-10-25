@@ -12,6 +12,7 @@
     <string name="refresh_interval">Refresh interval</string>
     <string name="widget_refresh_backend">Widget refresh backend</string>
     <string name="use_alarmmanager">Use AlarmManager (experimental, allows for intervals smaller than 15 minutes)</string>
+    <string name="permission_SCHEDULE_EXACT_ALARMS_note">Enable exact alarms in app settings to increase interval precision.</string>
     <string name="foreground">Foreground</string>
     <string name="background">Background</string>
     <string name="seconds_short">s</string>
