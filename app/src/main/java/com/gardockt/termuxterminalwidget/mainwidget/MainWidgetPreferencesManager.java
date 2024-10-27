@@ -19,12 +19,13 @@ public class MainWidgetPreferencesManager {
     @NonNull
     public static MainWidgetPreferences load(@NonNull Context context, int widgetId) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        MainWidgetPreferences preferences;
+        MainWidgetPreferences preferences = new MainWidgetPreferences();
 
         // command
-        String command = sharedPreferences.getString(generateKey(widgetId, KEY_COMMAND), "");
-
-        preferences = new MainWidgetPreferences(command);
+        String command = sharedPreferences.getString(generateKey(widgetId, KEY_COMMAND), null);
+        if (command != null) {
+            preferences.setCommand(command);
+        }
 
         // color scheme
         boolean colorSchemeSet = true;

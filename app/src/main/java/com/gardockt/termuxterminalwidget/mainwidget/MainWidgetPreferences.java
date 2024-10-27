@@ -7,13 +7,9 @@ import com.gardockt.termuxterminalwidget.ColorScheme;
 public class MainWidgetPreferences {
 
     @NonNull
-    private String command;
+    private String command = "";
     private ColorScheme colorScheme = null;
     private Integer textSizeSp = null;
-
-    public MainWidgetPreferences(@NonNull String command) {
-        this.command = command;
-    }
 
     public void setCommand(@NonNull String command) {
         this.command = command;

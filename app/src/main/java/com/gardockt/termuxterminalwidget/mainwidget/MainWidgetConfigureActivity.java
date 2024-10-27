@@ -38,12 +38,12 @@ public class MainWidgetConfigureActivity extends AppCompatActivity implements Co
 
     private final View.OnClickListener onConfirmButtonClickListener = new View.OnClickListener() {
         public void onClick(View v) {
+            MainWidgetPreferences preferences = new MainWidgetPreferences();
             final Context context = MainWidgetConfigureActivity.this;
 
             // command
             String command = commandField.getText().toString();
-
-            MainWidgetPreferences preferences = new MainWidgetPreferences(command);
+            preferences.setCommand(command);
 
             // color scheme
             if (customColorsSwitch.isChecked()) {
