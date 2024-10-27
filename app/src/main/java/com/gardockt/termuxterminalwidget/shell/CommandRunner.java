@@ -22,6 +22,14 @@ public class CommandRunner {
     public static void runCommand(@NonNull Context context, @NonNull String command, @NonNull TriConsumer<Integer, String, String> onCommandFinished) {
         Log.d(TAG, "runCommand");
 
+        // Empty commands are executed indefinitely - to prevent this, pretend that the command was
+        // executed successfully without any output. This does not apply to whitespace-only
+        // commands, which work correctly.
+        if (command.isEmpty()) {
+            onCommandFinished.accept(0, "", "");
+            return;
+        }
+
         int requestCode = RequestCodeManager.getRequestCode();
 
         Intent resultIntent = new Intent(context, PluginResultsService.class);
