@@ -8,7 +8,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,10 +17,8 @@ import com.gardockt.termuxterminalwidget.ColorPickerDialogInvoker;
 import com.gardockt.termuxterminalwidget.ColorScheme;
 import com.gardockt.termuxterminalwidget.GlobalPreferences;
 import com.gardockt.termuxterminalwidget.GlobalPreferencesUtils;
-import com.gardockt.termuxterminalwidget.R;
 import com.gardockt.termuxterminalwidget.components.ColorButton;
 import com.gardockt.termuxterminalwidget.databinding.MainWidgetConfigureBinding;
-import com.gardockt.termuxterminalwidget.exceptions.InvalidConfigurationException;
 import com.jaredrummler.android.colorpicker.ColorPickerDialogListener;
 
 import java.util.Locale;
@@ -63,17 +60,13 @@ public class MainWidgetConfigureActivity extends AppCompatActivity implements Co
                 preferences.setTextSizeSp(Integer.parseInt(textSizeString));
             } catch (NumberFormatException ignored) {}
 
-            try {
-                MainWidget.createWidget(context, widgetId, preferences);
+            MainWidget.createWidget(context, widgetId, preferences);
 
-                // Make sure we pass back the original widgetId
-                Intent resultValue = new Intent();
-                resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId);
-                setResult(RESULT_OK, resultValue);
-                finish();
-            } catch (InvalidConfigurationException ex) {
-                Toast.makeText(context, String.format("%s: %s (%s)", context.getString(R.string.error_creating_widget), ex.getClass().getSimpleName(), ex.getMessage()), Toast.LENGTH_LONG).show();
-            }
+            // Make sure we pass back the original widgetId
+            Intent resultValue = new Intent();
+            resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId);
+            setResult(RESULT_OK, resultValue);
+            finish();
         }
     };
     private MainWidgetConfigureBinding binding;
@@ -134,13 +127,7 @@ public class MainWidgetConfigureActivity extends AppCompatActivity implements Co
             return;
         }
 
-        MainWidgetPreferences preferences;
-        try {
-            preferences = MainWidgetPreferencesManager.load(this, widgetId);
-        } catch (InvalidConfigurationException ex) {
-            preferences = new MainWidgetPreferences("");
-        }
-
+        MainWidgetPreferences preferences = MainWidgetPreferencesManager.load(this, widgetId);
         fillSettings(preferences);
     }
 

@@ -18,7 +18,6 @@
     <string name="main_widget_description">Display output of a given command.</string>
     <string name="cannot_update_widget_service_not_running">Cannot update the widget, as the service is not running - open the app to start it</string>
     <string name="error_creating_widget">Error while creating a widget</string>
-    <string name="error_updating_preferences">Error while updating preferences</string>
 
     <string name="error_termux_missing">This app will not work without Termux, which is not installed.</string>
     <string name="error_termux_outdated">This app requires Termux v0.109 or later. In order to use this app, please update Termux.</string>

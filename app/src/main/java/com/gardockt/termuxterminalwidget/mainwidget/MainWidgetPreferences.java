@@ -1,21 +1,25 @@
 package com.gardockt.termuxterminalwidget.mainwidget;
 
+import androidx.annotation.NonNull;
+
 import com.gardockt.termuxterminalwidget.ColorScheme;
 
 public class MainWidgetPreferences {
 
+    @NonNull
     private String command;
     private ColorScheme colorScheme = null;
     private Integer textSizeSp = null;
 
-    public MainWidgetPreferences(String command) {
+    public MainWidgetPreferences(@NonNull String command) {
         this.command = command;
     }
 
-    public void setCommand(String command) {
+    public void setCommand(@NonNull String command) {
         this.command = command;
     }
 
+    @NonNull
     public String getCommand() {
         return command;
     }

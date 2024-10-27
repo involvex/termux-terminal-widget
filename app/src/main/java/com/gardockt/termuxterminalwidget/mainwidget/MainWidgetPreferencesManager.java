@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import androidx.annotation.NonNull;
 
 import com.gardockt.termuxterminalwidget.ColorScheme;
-import com.gardockt.termuxterminalwidget.exceptions.InvalidConfigurationException;
 
 public class MainWidgetPreferencesManager {
 
@@ -18,15 +17,12 @@ public class MainWidgetPreferencesManager {
     private static final String KEY_TEXT_SIZE_SP = "text_size_sp";
 
     @NonNull
-    public static MainWidgetPreferences load(@NonNull Context context, int widgetId) throws InvalidConfigurationException {
+    public static MainWidgetPreferences load(@NonNull Context context, int widgetId) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         MainWidgetPreferences preferences;
 
         // command
-        String command = sharedPreferences.getString(generateKey(widgetId, KEY_COMMAND), null);
-        if (command == null) {
-            throw new InvalidConfigurationException("Command is null");
-        }
+        String command = sharedPreferences.getString(generateKey(widgetId, KEY_COMMAND), "");
 
         preferences = new MainWidgetPreferences(command);
 
@@ -64,14 +60,11 @@ public class MainWidgetPreferencesManager {
         return preferences;
     }
 
-    public static void save(@NonNull Context context, int widgetId, @NonNull MainWidgetPreferences preferences) throws InvalidConfigurationException {
+    public static void save(@NonNull Context context, int widgetId, @NonNull MainWidgetPreferences preferences) {
         SharedPreferences.Editor editor = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit();
 
         // command
         String command = preferences.getCommand();
-        if (command == null) {
-            throw new InvalidConfigurationException("Command is null");
-        }
         editor.putString(generateKey(widgetId, KEY_COMMAND), command);
 
         // color scheme

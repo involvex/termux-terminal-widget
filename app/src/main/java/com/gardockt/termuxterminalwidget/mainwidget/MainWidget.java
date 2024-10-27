@@ -30,7 +30,6 @@ import com.gardockt.termuxterminalwidget.util.RequestCodeManager;
 import com.gardockt.termuxterminalwidget.util.TriConsumer;
 import com.gardockt.termuxterminalwidget.shell.CommandRunner;
 import com.gardockt.termuxterminalwidget.shell.CommandRunnerService;
-import com.gardockt.termuxterminalwidget.exceptions.InvalidConfigurationException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -120,20 +119,7 @@ public class MainWidget extends AppWidgetProvider {
                 }
             }
         } else {
-            MainWidgetPreferences preferences;
-            try {
-                preferences = MainWidgetPreferencesManager.load(context, widgetId);
-            } catch (InvalidConfigurationException ex) {
-                Log.e(TAG, String.format("Error while updating preferences: %s (%s)", ex.getClass().getSimpleName(), ex.getMessage()));
-                // while a critical error, we are still displaying it conditionally, as onUpdate is
-                // called when a widget is added, before the configuration activity is closed, so no
-                // valid configuration should be expected at that point
-                if (!silent) {
-                    Toast.makeText(context, String.format("%s: %s (%s)", context.getString(R.string.error_updating_preferences), ex.getClass().getSimpleName(), ex.getMessage()), Toast.LENGTH_LONG).show();
-                }
-                return;
-            }
-
+            MainWidgetPreferences preferences = MainWidgetPreferencesManager.load(context, widgetId);
             String command = preferences.getCommand();
             CommandRunner.runCommand(context, command, (exitCode, stdout, stderr) -> onCommandFinished.accept(context, widgetId, stdout));
         }
@@ -179,14 +165,8 @@ public class MainWidget extends AppWidgetProvider {
 
     @NonNull
     private static RemoteViews getInitializedRemoteViews(@NonNull Context context, int widgetId) {
-        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.main_widget);
-
-        try {
-            MainWidgetPreferences preferences = MainWidgetPreferencesManager.load(context, widgetId);
-            return getInitializedRemoteViews(context, preferences);
-        } catch (InvalidConfigurationException ex) {
-            return views;
-        }
+        MainWidgetPreferences preferences = MainWidgetPreferencesManager.load(context, widgetId);
+        return getInitializedRemoteViews(context, preferences);
     }
 
     /**
@@ -201,21 +181,17 @@ public class MainWidget extends AppWidgetProvider {
     }
 
     private static void onGlobalColorSchemeChanged(@NonNull Context context, int widgetId, @NonNull ColorScheme colorScheme) {
-        try {
-            MainWidgetPreferences widgetPreferences = MainWidgetPreferencesManager.load(context, widgetId);
-            if (widgetPreferences.getColorScheme() == null) {
-                updateRemoteViews(context, widgetId, MainWidget::setColorScheme, colorScheme);
-            }
-        } catch (InvalidConfigurationException ignored) {}
+        MainWidgetPreferences widgetPreferences = MainWidgetPreferencesManager.load(context, widgetId);
+        if (widgetPreferences.getColorScheme() == null) {
+            updateRemoteViews(context, widgetId, MainWidget::setColorScheme, colorScheme);
+        }
     }
 
     private static void onGlobalTextSizeChanged(@NonNull Context context, int widgetId, int textSize) {
-        try {
-            MainWidgetPreferences widgetPreferences = MainWidgetPreferencesManager.load(context, widgetId);
-            if (widgetPreferences.getTextSizeSp() == null) {
-                updateRemoteViews(context, widgetId, MainWidget::setTextSize, textSize);
-            }
-        } catch (InvalidConfigurationException ignored) {}
+        MainWidgetPreferences widgetPreferences = MainWidgetPreferencesManager.load(context, widgetId);
+        if (widgetPreferences.getTextSizeSp() == null) {
+            updateRemoteViews(context, widgetId, MainWidget::setTextSize, textSize);
+        }
     }
 
     // This is not going to be accurate. See the note above MainWidget.
@@ -306,7 +282,7 @@ public class MainWidget extends AppWidgetProvider {
         return true;
     }
 
-    static void createWidget(@NonNull Context context, int widgetId, @NonNull MainWidgetPreferences preferences) throws InvalidConfigurationException {
+    static void createWidget(@NonNull Context context, int widgetId, @NonNull MainWidgetPreferences preferences) {
         MainWidgetPreferencesManager.save(context, widgetId, preferences);
 
         // enqueue update work
