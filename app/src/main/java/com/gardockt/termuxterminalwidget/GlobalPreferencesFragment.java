@@ -93,6 +93,8 @@ public class GlobalPreferencesFragment extends Fragment implements ColorPickerDi
 
         colorForegroundButton = null;
         colorBackgroundButton = null;
+        textSizeField = null;
+        saveButton = null;
     }
 
     private void prepareColors() {
