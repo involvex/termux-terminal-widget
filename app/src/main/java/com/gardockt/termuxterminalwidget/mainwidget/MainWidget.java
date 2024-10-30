@@ -93,12 +93,14 @@ public class MainWidget extends AppWidgetProvider {
                     globalPrefsObservable
                             .map(GlobalPreferences::getColorScheme)
                             .distinctUntilChanged()
+                            .skip(1)
                             .subscribe((colorScheme) -> onGlobalColorSchemeChanged(context, widgetId, colorScheme))
             );
             subscriptions.add(
                     globalPrefsObservable
                             .map(GlobalPreferences::getTextSizeSp)
                             .distinctUntilChanged()
+                            .skip(1)
                             .subscribe((textSize) -> onGlobalTextSizeChanged(context, widgetId, textSize))
             );
             subscriptionsByWidgetId.put(widgetId, subscriptions);
