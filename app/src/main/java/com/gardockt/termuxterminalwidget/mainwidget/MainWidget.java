@@ -50,7 +50,7 @@ public class MainWidget extends AppWidgetProvider {
     private static final String TAG = MainWidget.class.getSimpleName();
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private static final MainWidgetUpdateManager widgetUpdateManager = new MainWidgetUpdateManager();
+    private static final MainWidgetUpdateQueue widgetUpdateQueue = new MainWidgetUpdateQueue();
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private static final ServiceConnection commandRunnerServiceConnection = new ServiceConnection() {
@@ -60,8 +60,8 @@ public class MainWidget extends AppWidgetProvider {
             CommandRunnerService.CommandRunnerServiceBinder binder = (CommandRunnerService.CommandRunnerServiceBinder) service;
             CommandRunnerService commandRunnerService = binder.getService();
             MainWidgetUpdater widgetUpdater = new MainWidgetUpdater(commandRunnerService, onCommandFinished);
-            widgetUpdateManager.setWidgetUpdater(widgetUpdater);
-            widgetUpdateManager.retryAll();
+            widgetUpdateQueue.setWidgetUpdater(widgetUpdater);
+            widgetUpdateQueue.retryAll();
         }
 
         @Override
@@ -113,7 +113,7 @@ public class MainWidget extends AppWidgetProvider {
         appWidgetManager.updateAppWidget(widgetId, views);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            widgetUpdateManager.addTask(widgetId);
+            widgetUpdateQueue.addTask(widgetId);
             if (!bindCommandRunnerService(context)) {
                 Log.w(TAG, "Cannot update the widget - service is not running");
                 if (!silent) {
@@ -266,7 +266,7 @@ public class MainWidget extends AppWidgetProvider {
     // returns true if binding intent is sent or the service is already bound
     @RequiresApi(api = Build.VERSION_CODES.O)
     public static boolean bindCommandRunnerService(@NonNull Context context) {
-        if (widgetUpdateManager.getWidgetUpdater() != null) {
+        if (widgetUpdateQueue.getWidgetUpdater() != null) {
             // service already bound
             return true;
         }

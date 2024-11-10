@@ -17,15 +17,15 @@ import java.util.Set;
 // with widgets placed, which results in all widgets getting blanked. These special cases prove that
 // update requests should be tracked independently of the service. To implement this idea, I have
 // created MainWidgetUpdater, which can update the widget of given ID (in fact, it's just a wrapper
-// for CommandRunnerService), and WidgetUpdateManager, which consumes update requests and to which a
-// MainWidgetUpdater can be attached to. When requesting an update through WidgetUpdateManager, what
-// action is done is determined by whether a WidgetUpdater is attached - if it is, the update is
-// done immediately, and otherwise it is stored in a collection of pending updates.
+// for CommandRunnerService), and MainWidgetUpdateQueue, which consumes update requests and to which
+// a MainWidgetUpdater can be attached to. When requesting an update through MainWidgetUpdateQueue,
+// what action is done is determined by whether a WidgetUpdater is attached - if it is, the update
+// is done immediately, and otherwise it is stored in a collection of pending updates.
 
 @RequiresApi(api = Build.VERSION_CODES.O)
-public class MainWidgetUpdateManager {
+public class MainWidgetUpdateQueue {
 
-    private final static String TAG = MainWidgetUpdateManager.class.getSimpleName();
+    private final static String TAG = MainWidgetUpdateQueue.class.getSimpleName();
 
     // Set is used, as there is no need to store order or duplicate requests
     private final Set<Integer> pendingUpdateWidgetIds = new HashSet<>();

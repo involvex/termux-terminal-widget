@@ -9,7 +9,7 @@ import androidx.annotation.RequiresApi;
 import com.gardockt.termuxterminalwidget.shell.CommandRunnerService;
 import com.gardockt.termuxterminalwidget.util.TriConsumer;
 
-// Rationale: see MainWidgetUpdateManager
+// Rationale: see MainWidgetUpdateQueue
 
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class MainWidgetUpdater {
