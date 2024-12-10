@@ -16,6 +16,9 @@ import androidx.annotation.RequiresApi;
 import com.gardockt.termuxterminalwidget.R;
 import com.gardockt.termuxterminalwidget.util.TriConsumer;
 
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.subjects.BehaviorSubject;
+
 // Rationale:
 // As a result of battery optimization in Android 8+, without this service running in foreground,
 // the app runs in background mode, and after a few minutes of running it is impossible to start new
@@ -31,6 +34,11 @@ public class CommandRunnerService extends Service {
     private final int NOTIFICATION_ID = 1;
 
     private static boolean running = false;
+
+    /**
+     * Emits an object after the service has started.
+     */
+    private static final BehaviorSubject<Object> serviceStarted = BehaviorSubject.create();
 
     public void runCommand(@NonNull String command, @NonNull TriConsumer<Integer, String, String> onCommandFinished) {
         CommandRunner.runCommand(this, command, onCommandFinished);
@@ -59,6 +67,8 @@ public class CommandRunnerService extends Service {
                 .build();
         startForeground(NOTIFICATION_ID, notification);
 
+        serviceStarted.onNext(new Object());
+
         return START_STICKY;
     }
 
@@ -76,6 +86,13 @@ public class CommandRunnerService extends Service {
 
     public static boolean isRunning() {
         return running;
+    }
+
+    /**
+     * @return Observable which emits an object after the service has started.
+     */
+    public static Observable<Object> getServiceStartedObservable() {
+        return serviceStarted;
     }
 
     public class CommandRunnerServiceBinder extends Binder {

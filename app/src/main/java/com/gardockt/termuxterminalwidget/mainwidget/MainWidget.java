@@ -1,5 +1,6 @@
 package com.gardockt.termuxterminalwidget.mainwidget;
 
+import android.annotation.SuppressLint;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
@@ -114,7 +115,7 @@ public class MainWidget extends AppWidgetProvider {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             widgetUpdateQueue.addTask(widgetId);
-            if (!bindCommandRunnerService(context)) {
+            if (!CommandRunnerService.isRunning()) {
                 Log.w(TAG, "Cannot update the widget - service is not running");
                 if (!silent) {
                     Toast.makeText(context, R.string.cannot_update_widget_service_not_running, Toast.LENGTH_LONG).show();
@@ -133,6 +134,23 @@ public class MainWidget extends AppWidgetProvider {
         for (int widgetId : widgetIds) {
             updateWidget(context, appWidgetManager, widgetId, true);
         }
+    }
+
+    /**
+     * @noinspection ResultOfMethodCallIgnored
+     */
+    @SuppressLint("CheckResult")
+    public static void setup(@NonNull Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CommandRunnerService.getServiceStartedObservable()
+                    .subscribe((v) -> {
+                        Log.v(TAG, "CommandRunnerService start event received");
+                        bindCommandRunnerService(context);
+                    });
+        }
+
+        // To display the output just after boot.
+        updateAll(context);
     }
 
     private static void setColorScheme(@NonNull RemoteViews views, @NonNull ColorScheme colorScheme) {
@@ -225,10 +243,6 @@ public class MainWidget extends AppWidgetProvider {
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-        Log.d(TAG, "onUpdate");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            bindCommandRunnerService(context);
-        }
         for (int appWidgetId : appWidgetIds) {
             updateWidget(context, appWidgetManager, appWidgetId, true);
         }
@@ -271,7 +285,10 @@ public class MainWidget extends AppWidgetProvider {
         }
     }
 
-    // returns true if binding intent is sent or the service is already bound
+    /**
+     * @noinspection UnusedReturnValue
+     * @return True if binding intent is sent or the service is already bound, false otherwise.
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public static boolean bindCommandRunnerService(@NonNull Context context) {
         if (widgetUpdateQueue.getWidgetUpdater() != null) {

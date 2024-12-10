@@ -4,27 +4,22 @@ import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import android.app.AlertDialog;
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.gardockt.termuxterminalwidget.shell.CommandRunnerService;
-import com.gardockt.termuxterminalwidget.mainwidget.MainWidget;
 import com.gardockt.termuxterminalwidget.util.RequestCodeManager;
 import com.jaredrummler.android.colorpicker.ColorPickerDialogListener;
 import com.termux.shared.termux.TermuxConstants;
@@ -38,18 +33,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             new ActivityResultContracts.StartActivityForResult(),
             this::onAppSettingsActivityFinished
     );
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private final ServiceConnection commandRunnerServiceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            MainWidget.bindCommandRunnerService(MainActivity.this);
-            MainActivity.this.unbindService(this);
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {}
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -165,9 +148,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             if (!CommandRunnerService.isRunning()) {
                 Intent intent = new Intent(this, CommandRunnerService.class);
                 startForegroundService(intent);
-
-                // bind just to execute a function when the service starts
-                bindService(intent, commandRunnerServiceConnection, BIND_ABOVE_CLIENT);
             }
         }
     }
