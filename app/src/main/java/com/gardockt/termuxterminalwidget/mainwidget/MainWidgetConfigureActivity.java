@@ -55,9 +55,11 @@ public class MainWidgetConfigureActivity extends AppCompatActivity implements Co
             }
 
             // text size
-            String textSizeString = textSizeField.getText().toString();
             try {
-                preferences.setTextSizeSp(Integer.parseInt(textSizeString));
+                int textSize = Integer.parseInt(textSizeField.getText().toString());
+                if (textSize > 0) {
+                    preferences.setTextSizeSp(textSize);
+                }
             } catch (NumberFormatException ignored) {}
 
             MainWidget.createWidget(context, widgetId, preferences);
