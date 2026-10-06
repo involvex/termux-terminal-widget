@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace 'com.gardockt.termuxterminalwidget'
-    compileSdk 34
+    namespace 'com.invapp.terminalwidget'
+    compileSdk 36
 
     defaultConfig {
-        applicationId "com.gardockt.termuxterminalwidget"
+        applicationId "com.involvex.termux_app.terminalwidget"
         minSdk 24
         targetSdk 34
         versionCode 4
@@ -20,29 +20,38 @@ android {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            resValue 'string', 'app_name', 'Termux Terminal Widget'
+            resValue 'string', 'app_name', 'InVx:Terminal Widget'
         }
         debug {
             applicationIdSuffix ".debug"
             debuggable true
-            resValue 'string', 'app_name', 'Termux Terminal Widget (Debug)'
+            resValue 'string', 'app_name', 'InVx:Terminal Widget (Debug)'
         }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
+        // Required by com.invapp:termux-shared:0.203.0
+        coreLibraryDesugaringEnabled true
     }
     buildFeatures {
         viewBinding true
+        // Required for resValue (app_name) below, cf. involvex/termux-app
+        resValues true
     }
 }
 
 dependencies {
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
+
     implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.work:work-runtime:2.9.1'
     implementation 'com.jaredrummler:colorpicker:1.1.0'
-    implementation 'com.termux.termux-app:termux-shared:0.118.0'
+    // InVxTermux termux-shared published locally from involvex/termux-app with:
+    // ./gradlew :termux-shared:publishReleasePublicationToMavenLocal (requires mavenLocal() in settings.gradle).
+    // Upstream used: implementation 'com.termux.termux-app:termux-shared:0.118.0'
+    implementation 'com.invapp:termux-shared:0.203.0'
     implementation 'com.google.guava:guava:29.0-android'
     implementation 'io.reactivex.rxjava3:rxjava:3.1.8'
 }

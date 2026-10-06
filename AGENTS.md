@@ -36,7 +36,7 @@ Termux Terminal Widget is an Android application that displays the output of she
 ## Project Structure
 
 ```
-app/src/main/java/com/gardockt/termuxterminalwidget/
+app/src/main/java/com/invapp/terminalwidget/
 ├── MainActivity.java              # App entry point, permission handling
 ├── MainApplication.java           # Application class
 ├── GlobalPreferences.java         # App-wide preferences model
@@ -123,7 +123,7 @@ app/src/main/java/com/gardockt/termuxterminalwidget/
 ./gradlew connectedAndroidTest
 
 # Run specific test class
-./gradlew testDebugUnitTest --tests "com.gardockt.termuxterminalwidget.ExampleTest"
+./gradlew testDebugUnitTest --tests "com.invapp.terminalwidget.ExampleTest"
 ```
 
 ---
@@ -172,7 +172,7 @@ app/src/main/java/com/gardockt/termuxterminalwidget/
 ### When Working with Termux Integration
 - Commands are executed via Termux's `RUN_COMMAND` intent
 - Results are received through `PluginResultsService`
-- The app requires `com.termux.permission.RUN_COMMAND` permission
+- The app requires `com.involvex.termux_app.permission.RUN_COMMAND` permission
 - Termux app must be installed (v0.109+) and queried via `<queries>` manifest entry
 
 ### When Modifying Preferences
@@ -202,4 +202,4 @@ app/src/main/java/com/gardockt/termuxterminalwidget/
 
 - **IzzyOnDroid:** Available via F-Droid repository
 - **Codeberg:** Source releases available
-- **APK naming:** `com.gardockt.termuxterminalwidget` (debug: `.debug` suffix)
+- **APK naming:** `com.invapp.terminalwidget` (debug: `.debug` suffix)

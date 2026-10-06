@@ -42,7 +42,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/foreground" />
 
-                <com.gardockt.termuxterminalwidget.components.ColorButton
+                <com.invapp.terminalwidget.components.ColorButton
                     android:id="@+id/color_foreground_button"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
@@ -65,7 +65,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/background" />
 
-                <com.gardockt.termuxterminalwidget.components.ColorButton
+                <com.invapp.terminalwidget.components.ColorButton
                     android:id="@+id/color_background_button"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
