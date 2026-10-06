@@ -1,5 +1,13 @@
-Termux Terminal Widget
+InVx:Terminal Widget
 ======================
+
+> InVxTermux fork of [gardockt/termux-terminal-widget](https://github.com/gardockt/termux-terminal-widget)
+> (note: `involvex/termux-terminal-widget` is a mirror, not a GitHub fork — sync
+> upstream manually via the `upstream` remote).
+> Package `com.involvex.termux_app.terminalwidget`. Targets InVxTermux
+> (`com.involvex.termux_app`) via `RUN_COMMAND`; no `sharedUserId`, so no
+> signature constraint. Depends on `com.invapp:termux-shared:0.203.0` published
+> locally from [involvex/termux-app](https://github.com/involvex/termux-app).
 
 Widget that displays output of a shell command.
 

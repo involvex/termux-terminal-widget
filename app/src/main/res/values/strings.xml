@@ -31,11 +31,11 @@
     <string name="cannot_update_widget_service_not_running">Cannot update the widget, as the service is not running - open the app to start it</string>
     <string name="error_creating_widget">Error while creating a widget</string>
 
-    <string name="error_termux_missing">This app will not work without Termux, which is not installed.</string>
-    <string name="error_termux_outdated">This app requires Termux v0.109 or later. In order to use this app, please update Termux.</string>
+    <string name="error_termux_missing">This app will not work without InVxTermux, which is not installed.</string>
+    <string name="error_termux_outdated">This app requires InVxTermux v0.109 or later. In order to use this app, please update InVxTermux.</string>
     <string name="permission_required">Permission required</string>
     <string name="required_permission_denied">Required permission has been denied, cannot continue</string>
-    <string name="permission_RUN_COMMAND_prompt">The app needs Termux permission to run commands. Please grant the permission on the next screen.</string>
+    <string name="permission_RUN_COMMAND_prompt">The app needs InVxTermux permission to run commands. Please grant the permission on the next screen.</string>
 
     <string name="settings_saved">Settings saved</string>
 </resources>
