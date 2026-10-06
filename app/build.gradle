@@ -36,6 +36,8 @@ android {
     }
     buildFeatures {
         viewBinding true
+        // Required for resValue (app_name) below, cf. involvex/termux-app
+        resValues true
     }
 }
 
